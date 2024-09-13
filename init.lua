@@ -435,6 +435,16 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = '[S]earch [N]eovim files' })
+
+      -- Shortcut for searching through vimwiki
+      vim.keymap.set('n', '<leader>sv', function()
+        builtin.find_files { cwd = '~/Dropbox/zettel/wiki' }
+      end, { desc = '[S]earch [V]imwiki files' })
+
+      -- Shortcut for searching through zettel
+      vim.keymap.set('n', '<leader>sz', function()
+        builtin.find_files { cwd = '~/Dropbox/zettel' }
+      end, { desc = '[S]earch [Z]ettel files' })
     end,
   },
 
