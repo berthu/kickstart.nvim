@@ -4,7 +4,7 @@ return {
     print 'Setting up vimwiki!'
     vim.g.vimwiki_list = {
       {
-        path = '~/Dropbox/theVault/Zettel/wiki/',
+        path = '~/Dropbox/zettel/wiki/',
         syntax = 'markdown',
         ext = 'md',
       },
