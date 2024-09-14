@@ -4,14 +4,27 @@ return {
     print 'Setting up vimwiki!'
     vim.g.vimwiki_list = {
       {
-        path = '~/Dropbox/zettel/wiki/',
+        path = '~/Dropbox/zettel/wiki',
         syntax = 'markdown',
-        ext = 'md',
+        ext = '.md',
         diary_frequency = 'weekly',
+        custom_wiki2html = '$HOME/Dropbox/zettel/structure/convert.py',
+        autotags = 1,
+        path_html = '~/Dropbox/zettel/wiki/html',
+        template_path = '~/Dropbox/zettel/wiki/templates',
+        template_default = 'GitHub',
+        template_ext = '.tpl',
+        list_margin = 0,
+        links_space_char = '_',
+        auto_export = 1,
+        auto_header = 1,
+        automatic_nested_syntaxes = 1,
+        html_filename_parameterization = 1,
       },
     }
     vim.g.vimwiki_global_ext = 0
     vim.g.vimwiki_folding = 'list'
+    vim.g.vimwiki_markdown_link_ext = 1
   end,
   config = function()
     -- Archive todo function that moves item to *.arc.md
@@ -32,6 +45,21 @@ return {
       local cmd = string.format('date -j -v +%dd -f %%F %s +%%F', days_ahead, date)
       return vim.fn.system(cmd):gsub('[%s]+', '')
     end
+    -- read file content and replace YYYY-MM-DD with date
+    -- return the file contents
+    local function get_template_and_replace_date(filepath, date)
+      local template_path = vim.fn.expand(filepath)
+      local file = io.open(template_path, 'r')
+      if not file then
+        print 'Error: Could not open template file'
+        return
+      end
+      local template_content = file:read '*all'
+      file:close()
+      -- Replace YYMMDD with the extracted date
+      local content = string.gsub(template_content, 'YYYY[-]MM[-]DD', date)
+      return content
+    end
     local function handle_weekly_diary_entry()
       print 'Grabbing weekly diary template!'
       -- Get the current buffer name
@@ -46,19 +74,15 @@ return {
         return
       end
       -- Read the template file
-      local template_path = vim.fn.expand '~/Dropbox/zettel/templates/weeklyYYMMDD.md'
-      local file = io.open(template_path, 'r')
-      if not file then
-        print 'Error: Could not open template file'
+      local template_path = '$HOME/Dropbox/zettel/templates/weeklyYYMMDD.md'
+      local content = get_template_and_replace_date(template_path, date)
+      if not content then
+        print(string.format('Template %s not found', template_path))
         return
       end
-      local template_content = file:read '*all'
-      file:close()
-      -- Replace YYMMDD with the extracted date
-      local content = string.gsub(template_content, 'YYYY[-]MM[-]DD', date)
       for i = 1, 6 do
         local next_day_date = get_next_date(date, i)
-        content = string.gsub(content, string.format('[%d]YYY[-]MM[-]DD', tostring(i)), next_day_date)
+        content = string.gsub(content, string.format('YYYY[-]MM[-]D[%d]', tostring(i)), next_day_date)
       end
       print(content)
       -- Insert the content into the buffer
