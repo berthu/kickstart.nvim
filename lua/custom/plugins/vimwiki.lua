@@ -41,6 +41,7 @@ return {
       true
     )
     vim.keymap.set('n', '<F4>', '<cmd>call ArchiveSelected(expand("%:p") .. ".arc.md")<CR>')
+
     local function get_next_date(date, days_ahead)
       local cmd = string.format('date -j -v +%dd -f %%F %s +%%F', days_ahead, date)
       return vim.fn.system(cmd):gsub('[%s]+', '')
@@ -84,7 +85,7 @@ return {
         local next_day_date = get_next_date(date, i)
         content = string.gsub(content, string.format('YYYY[-]MM[-]D[%d]', tostring(i)), next_day_date)
       end
-      print(content)
+
       -- Insert the content into the buffer
       vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(content, '\n'))
     end
@@ -94,5 +95,22 @@ return {
       callback = handle_weekly_diary_entry,
       group = augroup,
     })
+    local function paste_template_with_verbose_date(template_path)
+      local date = string.gsub(vim.fn.system 'date', ':', '-')
+      local content = get_template_and_replace_date(template_path, date)
+      if not content then
+        print(string.format('Template %s not found', template_path))
+      else
+        vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(content, '\n'))
+      end
+    end
+
+    -- Add keymap to paste permanent templates to new notes, and add which-key entry
+    local permanent_template_filepath = '$HOME/Dropbox/zettel/templates/permanent.md'
+    vim.keymap.set('n', '<leader>wp', function()
+      paste_template_with_verbose_date(permanent_template_filepath)
+    end, { noremap = true, silent = true })
+    local wk = require 'which-key'
+    wk.add { '<leader>wp', desc = '[P]aste Permanent Template' }
   end,
 }
