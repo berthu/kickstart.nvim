@@ -41,7 +41,8 @@ return {
       true
     )
     vim.keymap.set('n', '<F4>', '<cmd>call ArchiveSelected(expand("%:p") .. ".arc.md")<CR>')
-
+    -- VimWikiTodo: Go to my work todo list
+    vim.keymap.set('n', '<Leader>wT', '<cmd>e $HOME/Dropbox/zettel/wiki/work/todo.md<CR>')
     local function get_next_date(date, days_ahead)
       local cmd = string.format('date -j -v +%dd -f %%F %s +%%F', days_ahead, date)
       return vim.fn.system(cmd):gsub('[%s]+', '')
@@ -112,5 +113,6 @@ return {
     end, { noremap = true, silent = true })
     local wk = require 'which-key'
     wk.add { '<leader>wp', desc = '[P]aste Permanent Template' }
+    wk.add { '<leader>wt', desc = 'Open Work [T]odo' }
   end,
 }

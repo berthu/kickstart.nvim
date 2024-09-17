@@ -157,6 +157,9 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+-- Set linebreak to wrap words
+vim.opt.linebreak = true
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
