@@ -1,7 +1,6 @@
 return {
   'vimwiki/vimwiki',
   init = function()
-    print 'Setting up vimwiki!'
     vim.g.vimwiki_list = {
       {
         path = '~/Dropbox/zettel/wiki',
