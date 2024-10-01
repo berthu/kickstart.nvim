@@ -26,20 +26,32 @@ return {
     vim.g.vimwiki_markdown_link_ext = 1
   end,
   config = function()
-    -- Archive todo function that moves item to *.arc.md
-    vim.cmd(
-      [[
-  function! ArchiveSelected(filename) range
-      let timestamp = '[' . strftime('%Y-%m-%d %H:%M:%S') . ']'
-      let lines = getline(a:firstline, a:lastline)
-      let archival_data = [timestamp] + lines
-      call writefile(archival_data, a:filename, 'a')
-      execute a:firstline . ',' . a:lastline . 'd _'
-  endfunction
-          ]],
-      true
-    )
-    vim.keymap.set('n', '<F4>', '<cmd>call ArchiveSelected(expand("%:p") .. ".arc.md")<CR>')
+    -- Archive function that moves items to *.arc in the same directory
+    local function archive_selected_lines()
+      local timestamp = vim.fn.strftime '%Y-%m-%d %H:%M:%S'
+      local bufnr = vim.api.nvim_get_current_buf()
+      local start_line, end_line = vim.fn.getpos("'<")[2], vim.fn.getpos("'>")[2]
+      if start_line > end_line then
+        start_line, end_line = end_line, start_line
+      end
+      local lines = vim.api.nvim_buf_get_lines(bufnr, start_line - 1, end_line, false)
+      local archive_file_path = vim.fn.expand '%:p' .. '.arc'
+      local file = io.open(archive_file_path, 'a')
+      if file == nil then
+        print 'Error: Could not open archive file'
+        return
+      end
+      file:write(timestamp .. '\n')
+      for _, line in ipairs(lines) do
+        file:write(line .. '\n')
+      end
+      file:close()
+      vim.api.nvim_buf_set_lines(bufnr, start_line - 1, end_line, false, {})
+    end
+    vim.api.nvim_create_user_command('ArchiveLines', archive_selected_lines, { range = true })
+    -- <C-U> clears the range
+    vim.api.nvim_set_keymap('v', '<F4>', ':<C-U>ArchiveLines<CR>', { noremap = true, silent = true })
+
     -- VimWikiTodo: Go to my work todo list
     vim.keymap.set('n', '<Leader>wT', '<cmd>e $HOME/Dropbox/zettel/wiki/work/todo.md<CR>')
     local function get_next_date(date, days_ahead)
