@@ -122,8 +122,11 @@ return {
     vim.keymap.set('n', '<leader>wp', function()
       paste_template_with_verbose_date(permanent_template_filepath)
     end, { noremap = true, silent = true })
+    -- Map <Leader>t to insert a new TODO entry
+    vim.api.nvim_set_keymap('n', '<Leader>wo', 'o- [ ] ', { noremap = true, silent = true })
     local wk = require 'which-key'
     wk.add { '<leader>wp', desc = '[P]aste Permanent Template' }
-    wk.add { '<leader>wt', desc = 'Open Work [T]odo' }
+    wk.add { '<leader>wT', desc = 'Open Work [T]odo' }
+    wk.add { '<leader>wo', desc = 'Insert new Tod[o] item' }
   end,
 }
