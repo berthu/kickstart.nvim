@@ -8,6 +8,8 @@ return {
       panel = { enabled = false },
       filetypes = {
         markdown = false,
+        vimwiki = false,
+        md = false,
         python = true,
       },
     }

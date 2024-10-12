@@ -459,6 +459,14 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sz', function()
         builtin.find_files { cwd = '~/Dropbox/zettel' }
       end, { desc = '[S]earch [Z]ettel files' })
+
+      -- Shortcut for searching through ChatGPT History
+      vim.keymap.set('n', '<leader>sp', function()
+        builtin.live_grep {
+          search_dirs = { '~/Dropbox/App/configs/post_gpt/post_gpt.log' },
+          path_display = { 'shorten' },
+        }
+      end, { desc = '[S]earch GPT [P]rompt History' })
     end,
   },
 
@@ -654,6 +662,9 @@ require('lazy').setup({
               },
               -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
               -- diagnostics = { disable = { 'missing-fields' } },
+              diagnostics = {
+                globals = { 'vim', 'hs' },
+              },
             },
           },
         },
