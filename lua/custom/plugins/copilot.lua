@@ -11,6 +11,7 @@ return {
         vimwiki = false,
         md = false,
         python = true,
+        json = false,
       },
     }
   end,
